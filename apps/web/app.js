@@ -5,7 +5,7 @@ import {
   buildEditableEntries,
   buildTimelineEntries,
   calculateProfileMetrics,
-  createSampleState,
+  createInitialState,
   datetimeLocalValue,
   deserializeState,
   estimateExerciseCalories,
@@ -53,7 +53,6 @@ const deleteEntryButton = document.querySelector("#deleteEntryButton");
 const weightForm = document.querySelector("#weightForm");
 const mealForm = document.querySelector("#mealForm");
 const exerciseForm = document.querySelector("#exerciseForm");
-const seedButton = document.querySelector("#seedButton");
 const estimateMealButton = document.querySelector("#estimateMealButton");
 const jumpTodayButton = document.querySelector("#jumpTodayButton");
 const exportDataButton = document.querySelector("#exportDataButton");
@@ -77,7 +76,8 @@ function bootstrap() {
 
 function loadState() {
   const raw = localStorage.getItem(STORAGE_KEY);
-  return raw ? deserializeState(raw) : createSampleState(new Date());
+  const nextState = raw ? deserializeState(raw) : createInitialState();
+  return stripSeededEntries(nextState);
 }
 
 function saveState() {
@@ -160,6 +160,22 @@ function renderMealQuickChips() {
 function bindEvents() {
   segmentButtons.forEach((button) => {
     button.addEventListener("click", () => switchView(button.dataset.viewTarget));
+  });
+
+  document.querySelectorAll("[data-jump-form]").forEach((button) => {
+    button.addEventListener("click", () => {
+      const target = document.querySelector(`#${button.dataset.jumpForm}Card`);
+
+      if (!target) {
+        return;
+      }
+
+      if (target instanceof HTMLDetailsElement) {
+        target.open = true;
+      }
+
+      target.scrollIntoView({ behavior: "smooth", block: "start" });
+    });
   });
 
   historyDateInput.addEventListener("change", () => {
@@ -271,17 +287,6 @@ function bindEvents() {
     render();
   });
 
-  seedButton.addEventListener("click", () => {
-    const sample = createSampleState(new Date());
-    state.profile = sample.profile;
-    state.weightLogs = sample.weightLogs;
-    state.mealLogs = sample.mealLogs;
-    state.exerciseLogs = sample.exerciseLogs;
-    saveState();
-    renderProfileForm();
-    render();
-  });
-
   todayTimeline.addEventListener("click", handleTimelineAction);
   historyTimeline.addEventListener("click", handleTimelineAction);
   historyList.addEventListener("click", (event) => {
@@ -384,11 +389,6 @@ function render() {
       label: "今日消耗",
       value: `${today.caloriesOut} kcal`,
       subtle: `${today.exerciseCount} 次运动`,
-    },
-    {
-      label: "记录完成",
-      value: `${week.completionDays} / 7 天`,
-      subtle: `月度完成 ${month.completionDays} / 30 天`,
     },
   ]);
 
@@ -926,6 +926,33 @@ function registerServiceWorker() {
   if ("serviceWorker" in navigator) {
     navigator.serviceWorker.register("./service-worker.js").catch(() => {});
   }
+}
+
+function stripSeededEntries(nextState) {
+  const seededIds = new Set([
+    "weight-12",
+    "weight-10",
+    "weight-8",
+    "weight-6",
+    "weight-5",
+    "weight-4",
+    "weight-3",
+    "weight-2",
+    "weight-1",
+    "weight-0",
+    "meal-breakfast-today",
+    "meal-lunch-today",
+    "meal-dinner-yesterday",
+    "exercise-yesterday",
+    "exercise-today",
+  ]);
+
+  return {
+    ...nextState,
+    weightLogs: nextState.weightLogs.filter((item) => !seededIds.has(item.id)),
+    mealLogs: nextState.mealLogs.filter((item) => !seededIds.has(item.id)),
+    exerciseLogs: nextState.exerciseLogs.filter((item) => !seededIds.has(item.id)),
+  };
 }
 
 async function runMealAnalysis() {

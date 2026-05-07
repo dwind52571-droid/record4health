@@ -19,12 +19,7 @@
   <body>
     <div class="app-shell">
       <header class="hero-card">
-        <div class="hero-copy">
-          <p class="eyebrow">每日燃脂账本</p>
-          <h1>记录今天。</h1>
-          <p class="hero-note">体重、饮食、运动，一屏看完。</p>
-        </div>
-        <div class="hero-metrics" id="heroMetrics"></div>
+        <h1 class="hero-title">健康备忘录</h1>
       </header>
 
       <nav class="segmented" aria-label="页面切换">
@@ -37,33 +32,34 @@
       <main>
         <section class="view is-active" data-view="today">
           <section class="panel">
-            <div class="section-head">
+            <div class="today-overview">
               <div>
-                <p class="section-kicker">Today</p>
-                <h2>今日</h2>
+                <h2 class="today-title">今日</h2>
+                <p class="section-meta" id="todayLabel"></p>
               </div>
-              <p class="section-meta" id="todayLabel"></p>
+              <div class="today-anchors">
+                <button class="mini-button" type="button" data-jump-form="weight">体重</button>
+                <button class="mini-button" type="button" data-jump-form="meal">饮食</button>
+                <button class="mini-button" type="button" data-jump-form="exercise">运动</button>
+              </div>
             </div>
-            <div class="summary-grid" id="todaySummary"></div>
+            <div class="hero-metrics" id="heroMetrics"></div>
+            <div class="today-summary-compact" id="todaySummary"></div>
           </section>
 
           <section class="panel">
             <div class="section-head">
               <div>
-                <p class="section-kicker">Quick Add</p>
                 <h2>记录</h2>
               </div>
-              <button class="ghost-button" id="seedButton" type="button">
-                重新填充示例
-              </button>
             </div>
 
             <div class="form-stack">
-              <article class="entry-card">
-                <div class="entry-head">
+              <details class="entry-card entry-accordion" id="weightCard" open>
+                <summary class="entry-head entry-summary">
                   <h3>体重</h3>
-                  <p>晨起空腹更准。</p>
-                </div>
+                  <p>晨起空腹更准</p>
+                </summary>
                 <form id="weightForm" class="entry-form">
                   <label>
                     <span>体重（kg）</span>
@@ -95,13 +91,13 @@
                   </label>
                   <button type="submit" class="primary-button">保存体重</button>
                 </form>
-              </article>
+              </details>
 
-              <article class="entry-card">
-                <div class="entry-head">
+              <details class="entry-card entry-accordion" id="mealCard">
+                <summary class="entry-head entry-summary">
                   <h3>饮食</h3>
-                  <p>拍照留档，描述估算。</p>
-                </div>
+                  <p>拍照留档，描述估算</p>
+                </summary>
                 <form id="mealForm" class="entry-form">
                   <label>
                     <span>餐次</span>
@@ -142,13 +138,13 @@
                   <div class="estimate-panel" id="mealEstimatePanel"></div>
                   <p class="helper-text" id="mealAiStatus">本地规则可用，HTTP 模式下可启用 AI。</p>
                 </form>
-              </article>
+              </details>
 
-              <article class="entry-card">
-                <div class="entry-head">
+              <details class="entry-card entry-accordion" id="exerciseCard">
+                <summary class="entry-head entry-summary">
                   <h3>运动</h3>
-                  <p>自动估算消耗。</p>
-                </div>
+                  <p>自动估算消耗</p>
+                </summary>
                 <form id="exerciseForm" class="entry-form">
                   <label>
                     <span>运动类型</span>
@@ -191,7 +187,7 @@
                   </label>
                   <button type="submit" class="primary-button">保存运动</button>
                 </form>
-              </article>
+              </details>
             </div>
           </section>
 

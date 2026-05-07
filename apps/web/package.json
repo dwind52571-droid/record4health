@@ -1,0 +1,13 @@
+{
+  "name": "daily-health-tracker-web",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "node server.mjs",
+    "serve": "node server.mjs",
+    "static": "python3 -m http.server 4173",
+    "test": "node --test tests/*.test.mjs",
+    "check": "node --check app.js && node --check src/health-core.js && node --check src/server-core.mjs && node --check server.mjs && node --test tests/*.test.mjs"
+  }
+}

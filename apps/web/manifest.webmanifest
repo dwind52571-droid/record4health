@@ -1,0 +1,17 @@
+{
+  "name": "每日燃脂账本",
+  "short_name": "燃脂账本",
+  "description": "记录体重、饮食和运动，并查看每日、每周、每月的趋势。",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#f6efe5",
+  "theme_color": "#f6efe5",
+  "icons": [
+    {
+      "src": "./icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

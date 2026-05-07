@@ -1,0 +1,362 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, viewport-fit=cover"
+    />
+    <meta name="theme-color" content="#f6efe5" />
+    <meta
+      name="description"
+      content="记录日常饮食、体重和运动，查看每天、每周和每月的趋势。"
+    />
+    <link rel="icon" href="./icon.svg" type="image/svg+xml" />
+    <link rel="manifest" href="./manifest.webmanifest" />
+    <link rel="stylesheet" href="./styles.css" />
+    <title>每日燃脂账本</title>
+  </head>
+  <body>
+    <div class="app-shell">
+      <header class="hero-card">
+        <div class="hero-copy">
+          <p class="eyebrow">每日燃脂账本</p>
+          <h1>记录今天。</h1>
+          <p class="hero-note">体重、饮食、运动，一屏看完。</p>
+        </div>
+        <div class="hero-metrics" id="heroMetrics"></div>
+      </header>
+
+      <nav class="segmented" aria-label="页面切换">
+        <button class="segment is-active" data-view-target="today">今日</button>
+        <button class="segment" data-view-target="history">历史</button>
+        <button class="segment" data-view-target="insights">统计</button>
+        <button class="segment" data-view-target="library">偏好</button>
+      </nav>
+
+      <main>
+        <section class="view is-active" data-view="today">
+          <section class="panel">
+            <div class="section-head">
+              <div>
+                <p class="section-kicker">Today</p>
+                <h2>今日</h2>
+              </div>
+              <p class="section-meta" id="todayLabel"></p>
+            </div>
+            <div class="summary-grid" id="todaySummary"></div>
+          </section>
+
+          <section class="panel">
+            <div class="section-head">
+              <div>
+                <p class="section-kicker">Quick Add</p>
+                <h2>记录</h2>
+              </div>
+              <button class="ghost-button" id="seedButton" type="button">
+                重新填充示例
+              </button>
+            </div>
+
+            <div class="form-stack">
+              <article class="entry-card">
+                <div class="entry-head">
+                  <h3>体重</h3>
+                  <p>晨起空腹更准。</p>
+                </div>
+                <form id="weightForm" class="entry-form">
+                  <label>
+                    <span>体重（kg）</span>
+                    <input
+                      name="weightKg"
+                      type="number"
+                      min="20"
+                      max="300"
+                      step="0.1"
+                      required
+                    />
+                  </label>
+                  <label>
+                    <span>记录时间</span>
+                    <input name="loggedAt" type="datetime-local" required />
+                  </label>
+                  <label class="checkbox-row">
+                    <input name="isFasted" type="checkbox" checked />
+                    <span>空腹测量</span>
+                  </label>
+                  <label>
+                    <span>备注</span>
+                    <input
+                      name="note"
+                      type="text"
+                      maxlength="80"
+                      placeholder="比如：昨晚吃得偏咸"
+                    />
+                  </label>
+                  <button type="submit" class="primary-button">保存体重</button>
+                </form>
+              </article>
+
+              <article class="entry-card">
+                <div class="entry-head">
+                  <h3>饮食</h3>
+                  <p>拍照留档，描述估算。</p>
+                </div>
+                <form id="mealForm" class="entry-form">
+                  <label>
+                    <span>餐次</span>
+                    <select name="mealType">
+                      <option value="breakfast">早餐</option>
+                      <option value="lunch">午餐</option>
+                      <option value="dinner">晚餐</option>
+                      <option value="snack">加餐</option>
+                    </select>
+                  </label>
+                  <label>
+                    <span>记录时间</span>
+                    <input name="loggedAt" type="datetime-local" required />
+                  </label>
+                  <label>
+                    <span>吃了什么</span>
+                    <textarea
+                      name="description"
+                      rows="3"
+                      maxlength="200"
+                      placeholder="比如：2 个鸡蛋，一杯牛奶，一片全麦面包"
+                    ></textarea>
+                  </label>
+                  <div>
+                    <span class="inline-label">常用食物</span>
+                    <div class="quick-chip-row" id="mealQuickChips"></div>
+                  </div>
+                  <label>
+                    <span>拍照留档</span>
+                    <input name="photo" type="file" accept="image/*" />
+                  </label>
+                  <div class="dual-actions">
+                    <button type="button" class="secondary-button" id="estimateMealButton">
+                      AI 识别
+                    </button>
+                    <button type="submit" class="primary-button">保存饮食</button>
+                  </div>
+                  <div class="estimate-panel" id="mealEstimatePanel"></div>
+                  <p class="helper-text" id="mealAiStatus">本地规则可用，HTTP 模式下可启用 AI。</p>
+                </form>
+              </article>
+
+              <article class="entry-card">
+                <div class="entry-head">
+                  <h3>运动</h3>
+                  <p>自动估算消耗。</p>
+                </div>
+                <form id="exerciseForm" class="entry-form">
+                  <label>
+                    <span>运动类型</span>
+                    <select name="exerciseType"></select>
+                  </label>
+                  <label>
+                    <span>记录时间</span>
+                    <input name="loggedAt" type="datetime-local" required />
+                  </label>
+                  <label>
+                    <span>时长（分钟）</span>
+                    <input
+                      name="durationMinutes"
+                      type="number"
+                      min="1"
+                      max="600"
+                      step="1"
+                      required
+                    />
+                  </label>
+                  <label>
+                    <span>次数 / 层数（可选）</span>
+                    <input
+                      name="count"
+                      type="number"
+                      min="0"
+                      max="5000"
+                      step="1"
+                      placeholder="比如跳绳 1000 次"
+                    />
+                  </label>
+                  <label>
+                    <span>备注</span>
+                    <input
+                      name="note"
+                      type="text"
+                      maxlength="80"
+                      placeholder="比如：中等强度，心率有点高"
+                    />
+                  </label>
+                  <button type="submit" class="primary-button">保存运动</button>
+                </form>
+              </article>
+            </div>
+          </section>
+
+          <section class="panel">
+            <div class="section-head">
+              <div>
+                <p class="section-kicker">Timeline</p>
+                <h2>明细</h2>
+              </div>
+              <p class="section-meta">按时间排序，可编辑</p>
+            </div>
+            <div class="timeline" id="todayTimeline"></div>
+          </section>
+        </section>
+
+        <section class="view" data-view="history">
+          <section class="panel">
+            <div class="section-head">
+              <div>
+                <p class="section-kicker">History</p>
+                <h2>历史</h2>
+              </div>
+              <p class="section-meta">回看和修正</p>
+            </div>
+            <div class="history-toolbar">
+              <label class="history-picker">
+                <span>查看日期</span>
+                <input id="historyDateInput" type="date" />
+              </label>
+              <button class="ghost-button" id="jumpTodayButton" type="button">
+                回到今天
+              </button>
+            </div>
+            <div class="summary-grid" id="historySummary"></div>
+          </section>
+
+          <section class="panel">
+            <div class="section-head">
+              <div>
+                <p class="section-kicker">Day Records</p>
+                <h2>当天记录</h2>
+              </div>
+              <p class="section-meta" id="historyLabel"></p>
+            </div>
+            <div class="timeline" id="historyTimeline"></div>
+          </section>
+
+          <section class="panel">
+            <div class="section-head">
+              <div>
+                <p class="section-kicker">Recent Days</p>
+                <h2>最近日期</h2>
+              </div>
+              <p class="section-meta">点一下切换</p>
+            </div>
+            <div class="history-list" id="historyList"></div>
+          </section>
+        </section>
+
+        <section class="view" data-view="insights">
+          <section class="panel">
+            <div class="section-head">
+              <div>
+                <p class="section-kicker">Weekly + Monthly</p>
+                <h2>统计</h2>
+              </div>
+              <p class="section-meta">7 天 / 30 天</p>
+            </div>
+            <div class="insight-grid" id="insightSummary"></div>
+          </section>
+
+          <section class="panel">
+            <div class="section-head">
+              <div>
+                <p class="section-kicker">Weight Trend</p>
+                <h2>体重趋势</h2>
+              </div>
+              <p class="section-meta">最近 14 天</p>
+            </div>
+            <div class="chart-card">
+              <svg id="weightChart" viewBox="0 0 360 180" aria-label="体重趋势图"></svg>
+            </div>
+          </section>
+
+          <section class="panel">
+            <div class="section-head">
+              <div>
+                <p class="section-kicker">Consistency</p>
+                <h2>完成度</h2>
+              </div>
+              <p class="section-meta">看坚持情况</p>
+            </div>
+            <div class="streak-grid" id="streakGrid"></div>
+          </section>
+        </section>
+
+        <section class="view" data-view="library">
+          <section class="panel">
+            <div class="section-head">
+              <div>
+                <p class="section-kicker">Preferences</p>
+                <h2>偏好</h2>
+              </div>
+              <p class="section-meta">影响估算结果</p>
+            </div>
+            <form id="profileForm" class="profile-grid"></form>
+          </section>
+
+          <section class="panel">
+            <div class="section-head">
+              <div>
+                <p class="section-kicker">Common Foods</p>
+                <h2>食物词库</h2>
+              </div>
+              <p class="section-meta">当前为本地规则版</p>
+            </div>
+            <div class="tag-cloud" id="foodDictionary"></div>
+          </section>
+
+          <section class="panel">
+            <div class="section-head">
+              <div>
+                <p class="section-kicker">Backup</p>
+                <h2>备份</h2>
+              </div>
+              <p class="section-meta">导出或恢复本地数据</p>
+            </div>
+            <div class="backup-actions">
+              <button class="primary-button" id="exportDataButton" type="button">导出数据</button>
+              <label class="secondary-button file-trigger">
+                导入数据
+                <input id="importDataInput" type="file" accept="application/json" hidden />
+              </label>
+            </div>
+            <p class="helper-text" id="backupStatus">数据保存在当前浏览器本地。</p>
+          </section>
+        </section>
+      </main>
+    </div>
+
+    <template id="metricCardTemplate">
+      <article class="metric-card">
+        <p class="metric-label"></p>
+        <p class="metric-value"></p>
+        <p class="metric-subtle"></p>
+      </article>
+    </template>
+
+    <dialog class="edit-dialog" id="editDialog">
+      <form method="dialog" class="dialog-shell" id="editForm">
+        <div class="section-head">
+          <div>
+            <p class="section-kicker">Edit Entry</p>
+            <h2 id="editDialogTitle">编辑记录</h2>
+          </div>
+          <button class="ghost-button" value="cancel" type="submit">关闭</button>
+        </div>
+        <div class="dialog-fields" id="editFields"></div>
+        <div class="dialog-actions">
+          <button class="danger-button" id="deleteEntryButton" type="button">删除记录</button>
+          <button class="primary-button" id="saveEditButton" type="submit">保存修改</button>
+        </div>
+      </form>
+    </dialog>
+
+    <script type="module" src="./app.js"></script>
+  </body>
+</html>

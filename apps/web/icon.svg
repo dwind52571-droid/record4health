@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" role="img" aria-labelledby="title">
+  <title>每日燃脂账本</title>
+  <defs>
+    <linearGradient id="bg" x1="0" x2="1" y1="0" y2="1">
+      <stop offset="0%" stop-color="#f6d5b0" />
+      <stop offset="100%" stop-color="#e5763b" />
+    </linearGradient>
+  </defs>
+  <rect width="128" height="128" rx="30" fill="url(#bg)" />
+  <path
+    d="M39 32h50c5.523 0 10 4.477 10 10v45c0 5.523-4.477 10-10 10H39c-5.523 0-10-4.477-10-10V42c0-5.523 4.477-10 10-10Z"
+    fill="#fff7ef"
+    opacity="0.95"
+  />
+  <path d="M45 47h38" stroke="#cb6127" stroke-linecap="round" stroke-width="8" />
+  <path d="M45 65h22" stroke="#cb6127" stroke-linecap="round" stroke-width="8" />
+  <path d="M45 83h28" stroke="#cb6127" stroke-linecap="round" stroke-width="8" />
+  <circle cx="88" cy="80" r="16" fill="#2f8f5b" />
+  <path d="M88 71v9l6 4" stroke="#fff" stroke-linecap="round" stroke-linejoin="round" stroke-width="5" />
+</svg>
